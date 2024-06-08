@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import jobs from "../infrastructure/jobsdata";
+// import jobs from "../infrastructure/jobsdata";
 import Job from "../infrastructure/schemas/job";
 
 // RESTful api
@@ -77,7 +77,7 @@ export const createJob = async (req: Request, res: Response) => {
 };
 
 export const getJobById = async (req: Request, res: Response) => {
-  console.log(req.params.id);
+  // console.log(req.params.id);
   const job = await Job.findById(req.params.id);
 
   if (!job) {
