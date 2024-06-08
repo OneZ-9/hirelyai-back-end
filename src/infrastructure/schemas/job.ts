@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 // define shape of the job object
 const jobSchema = new mongoose.Schema({
