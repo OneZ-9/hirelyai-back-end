@@ -106,8 +106,10 @@ export const updateJob = async (req: Request, res: Response) => {
 
   await Job.findByIdAndUpdate(jobToUpdate, {
     title: req.body.title,
+    description: req.body.description,
     type: req.body.type,
     location: req.body.location,
+    questions: req.body.questions,
   });
   return res.status(204).send();
 };

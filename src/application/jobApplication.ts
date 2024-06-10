@@ -9,6 +9,7 @@ export const createJobApplication = async (
   try {
     const jobApplication = req.body;
     const createdJobApplication = await JobApplication.create(jobApplication);
+    // console.log(jobApplication);
     return res.status(201).send();
   } catch (error) {
     next(error);

@@ -1,10 +1,13 @@
 import express from "express";
+import cors from "cors";
+
 import jobsRouter from "./api/jobs";
 import { connectDB } from "./infrastructure/db";
 import jobApplicationRouter from "./api/jobApplication";
 
 const app = express();
 app.use(express.json()); // retrive the req json body
+app.use(cors());
 
 connectDB();
 
