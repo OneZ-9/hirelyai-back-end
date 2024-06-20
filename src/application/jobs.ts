@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 // import jobs from "../infrastructure/jobsdata";
 import Job from "../infrastructure/schemas/job";
 
@@ -66,50 +66,82 @@ export const updateJob = (req: Request, res: Response) => {
 
 */
 export const getAllJobs = async (req: Request, res: Response) => {
-  const jobs = await Job.find(); // find all the jobs which are inside in DB that have shape of Job
-  return res.status(200).json(jobs);
+  try {
+    const jobs = await Job.find(); // find all the jobs which are inside in DB that have shape of Job
+    return res.status(200).json(jobs);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(); // handle unknown errors
+  }
 };
 
 export const createJob = async (req: Request, res: Response) => {
-  const job = req.body;
-  await Job.create(job);
-  return res.status(201).send();
+  try {
+    const job = req.body;
+    if (
+      typeof job.title === "undefined" ||
+      typeof job.description === "undefined" ||
+      typeof job.type === "undefined" ||
+      typeof job.location === "undefined"
+    )
+      return res.status(400).send();
+
+    await Job.create(job);
+    return res.status(201).send();
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send();
+  }
 };
 
 export const getJobById = async (req: Request, res: Response) => {
-  // console.log(req.params.id);
-  const job = await Job.findById(req.params.id);
+  try {
+    // console.log(req.params.id);
+    const job = await Job.findById(req.params.id);
 
-  if (!job) {
-    return res.status(404).send("Requested id doesnt match, retry again");
+    if (!job) {
+      return res.status(404).send();
+    }
+    return res.status(200).json(job);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send();
   }
-
-  return res.status(200).json(job);
 };
 
 export const deleteJob = async (req: Request, res: Response) => {
-  const jobToDelete = await Job.findById(req.params.id);
+  try {
+    const jobToDelete = await Job.findById(req.params.id);
 
-  if (!jobToDelete) {
-    return res.status(404).send("Requested id doesnt match, retry again");
+    if (!jobToDelete) {
+      return res.status(404).send();
+    }
+    await Job.findByIdAndDelete(jobToDelete);
+    return res.status(204).send();
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send();
   }
-  await Job.findByIdAndDelete(jobToDelete);
-  return res.status(204).send();
 };
 
 export const updateJob = async (req: Request, res: Response) => {
-  const jobToUpdate = await Job.findById(req.params.id);
+  try {
+    const jobToUpdate = await Job.findById(req.params.id);
 
-  if (!jobToUpdate) {
-    return res.status(404).send("Requested id doesnt match, retry again");
+    if (!jobToUpdate) {
+      return res.status(404).send();
+    }
+
+    await Job.findByIdAndUpdate(jobToUpdate, {
+      title: req.body.title,
+      description: req.body.description,
+      type: req.body.type,
+      location: req.body.location,
+      questions: req.body.questions,
+    });
+    return res.status(204).send();
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send();
   }
-
-  await Job.findByIdAndUpdate(jobToUpdate, {
-    title: req.body.title,
-    description: req.body.description,
-    type: req.body.type,
-    location: req.body.location,
-    questions: req.body.questions,
-  });
-  return res.status(204).send();
 };

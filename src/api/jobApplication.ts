@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createJobApplication,
+  getJobApplicationById,
   getJobApplications,
 } from "../application/jobApplication";
 
@@ -10,5 +11,6 @@ jobApplicationRouter
   .route("/")
   .get(getJobApplications)
   .post(createJobApplication);
+jobApplicationRouter.route("/:applicationId").get(getJobApplicationById);
 
 export default jobApplicationRouter;

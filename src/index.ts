@@ -12,7 +12,7 @@ app.use(cors());
 connectDB();
 
 app.use("/jobs", jobsRouter);
-app.use("/jobApplication", jobApplicationRouter);
+app.use("/jobApplications", jobApplicationRouter);
 
 const PORT = 8000;
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}.`));
