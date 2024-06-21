@@ -3,8 +3,8 @@ import { NextFunction, Request, Response } from "express";
 
 export const createJobApplication = async (
   req: Request,
-  res: Response
-  // next: NextFunction
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const jobApplication = req.body;
@@ -12,16 +12,16 @@ export const createJobApplication = async (
     // console.log(jobApplication);
     return res.status(201).send();
   } catch (error) {
-    // next(error);
-    console.log(error);
-    return res.status(500).send();
+    next(error);
+    // console.log(error);
+    // return res.status(500).send();
   }
 };
 
 export const getJobApplicationById = async (
   req: Request,
-  res: Response
-  // next: NextFunction
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const { applicationId } = req.params;
@@ -31,16 +31,14 @@ export const getJobApplicationById = async (
 
     return res.status(200).json(jobApplication);
   } catch (error) {
-    // next(error);
-    console.log(error);
-    return res.status(500).send();
+    next(error);
   }
 };
 
 export const getJobApplications = async (
   req: Request,
-  res: Response
-  // next: NextFunction
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     // const jobId = req.query.jobId;
@@ -58,8 +56,6 @@ export const getJobApplications = async (
     const jobApplications = await JobApplication.find({ job: jobId });
     return res.status(200).json(jobApplications);
   } catch (error) {
-    // next(error);
-    console.log(error);
-    return res.status(500).send();
+    next(error);
   }
 };

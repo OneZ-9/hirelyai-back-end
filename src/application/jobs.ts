@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 // import jobs from "../infrastructure/jobsdata";
 import Job from "../infrastructure/schemas/job";
+import NotFoundError from "../domain/errors/not-found-error";
+import ValidationError from "../domain/errors/validation-error";
 
 // RESTful api
 
@@ -65,17 +67,26 @@ export const updateJob = (req: Request, res: Response) => {
 
 
 */
-export const getAllJobs = async (req: Request, res: Response) => {
+export const getAllJobs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const jobs = await Job.find(); // find all the jobs which are inside in DB that have shape of Job
+    // throw new Error("Manually created err");
+
     return res.status(200).json(jobs);
   } catch (error) {
-    console.log(error);
-    return res.status(500).send(); // handle unknown errors
+    next(error); // handle unknown errors
   }
 };
 
-export const createJob = async (req: Request, res: Response) => {
+export const createJob = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const job = req.body;
     if (
@@ -84,55 +95,72 @@ export const createJob = async (req: Request, res: Response) => {
       typeof job.type === "undefined" ||
       typeof job.location === "undefined"
     )
-      return res.status(400).send();
+      throw new ValidationError("Unable to validate missing data");
 
     await Job.create(job);
     return res.status(201).send();
   } catch (error) {
-    console.log(error);
-    return res.status(500).send();
+    next(error);
   }
 };
 
-export const getJobById = async (req: Request, res: Response) => {
+export const getJobById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // console.log(req.params.id);
     const job = await Job.findById(req.params.id);
 
     if (!job) {
-      return res.status(404).send();
+      throw new NotFoundError("Job not found!");
     }
     return res.status(200).json(job);
   } catch (error) {
-    console.log(error);
-    return res.status(500).send();
+    next(error);
   }
 };
 
-export const deleteJob = async (req: Request, res: Response) => {
+export const deleteJob = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const jobToDelete = await Job.findById(req.params.id);
 
     if (!jobToDelete) {
-      return res.status(404).send();
+      throw new NotFoundError("Job not found!");
     }
     await Job.findByIdAndDelete(jobToDelete);
     return res.status(204).send();
   } catch (error) {
-    console.log(error);
-    return res.status(500).send();
+    next(error);
   }
 };
 
-export const updateJob = async (req: Request, res: Response) => {
+export const updateJob = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const jobToUpdate = await Job.findById(req.params.id);
 
     if (!jobToUpdate) {
-      return res.status(404).send();
+      throw new NotFoundError("Job not found!");
     }
+    const job = req.body;
+    if (
+      typeof job.title === "undefined" ||
+      typeof job.description === "undefined" ||
+      typeof job.type === "undefined" ||
+      typeof job.location === "undefined"
+    )
+      throw new ValidationError("Unable to validate missing data");
 
-    await Job.findByIdAndUpdate(jobToUpdate, {
+    await Job.findByIdAndUpdate(req.params.id, {
       title: req.body.title,
       description: req.body.description,
       type: req.body.type,
@@ -141,7 +169,6 @@ export const updateJob = async (req: Request, res: Response) => {
     });
     return res.status(204).send();
   } catch (error) {
-    console.log(error);
-    return res.status(500).send();
+    next(error);
   }
 };
