@@ -3,6 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import Job from "../infrastructure/schemas/job";
 import NotFoundError from "../domain/errors/not-found-error";
 import ValidationError from "../domain/errors/validation-error";
+import { z } from "zod";
+import { error } from "console";
 
 // RESTful api
 
@@ -88,16 +90,21 @@ export const createJob = async (
   next: NextFunction
 ) => {
   try {
-    const job = req.body;
-    if (
-      typeof job.title === "undefined" ||
-      typeof job.description === "undefined" ||
-      typeof job.type === "undefined" ||
-      typeof job.location === "undefined"
-    )
-      throw new ValidationError("Unable to validate missing data");
+    const job = z
+      .object({
+        title: z.string(),
+        description: z.string(),
+        type: z.string(),
+        location: z.string(),
+        questions: z.string().array().optional(),
+      })
+      .safeParse(req.body);
 
-    await Job.create(job);
+    if (!job.success) {
+      throw new ValidationError(job.error.message);
+    }
+
+    await Job.create(job.data);
     return res.status(201).send();
   } catch (error) {
     next(error);
@@ -151,14 +158,18 @@ export const updateJob = async (
     if (!jobToUpdate) {
       throw new NotFoundError("Job not found!");
     }
-    const job = req.body;
-    if (
-      typeof job.title === "undefined" ||
-      typeof job.description === "undefined" ||
-      typeof job.type === "undefined" ||
-      typeof job.location === "undefined"
-    )
-      throw new ValidationError("Unable to validate missing data");
+    const job = z
+      .object({
+        title: z.string(),
+        description: z.string(),
+        type: z.string(),
+        location: z.string(),
+        questions: z.string().array().optional(),
+      })
+      .safeParse(req.body);
+    if (!job.success) {
+      throw new ValidationError(job.error.message);
+    }
 
     await Job.findByIdAndUpdate(req.params.id, {
       title: req.body.title,

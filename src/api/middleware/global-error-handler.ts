@@ -9,12 +9,18 @@ const GlobalErrorHandlingMiddleware = (
   switch (error.name) {
     case "ValidationError":
       console.log(error);
-      res.status(400).json({ message: error.message.replaceAll("\n", "") });
+      res.status(400).json({
+        message: error.message
+          .replaceAll(/[/" ]/g, "")
+          .replaceAll(/[\n ]/g, " "),
+      });
       break;
 
     case "UnauthorizedError":
       console.log(error);
-      res.status(401).json({ message: error.message.replaceAll("\n", "") });
+      res
+        .status(401)
+        .json({ message: error.message.replaceAll(/[\n/" ]/g, "") });
       break;
 
     case "ForbiddenError":
