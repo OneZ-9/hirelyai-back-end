@@ -4,7 +4,6 @@ import Job from "../infrastructure/schemas/job";
 import NotFoundError from "../domain/errors/not-found-error";
 import ValidationError from "../domain/errors/validation-error";
 import { z } from "zod";
-import { error } from "console";
 
 // RESTful api
 

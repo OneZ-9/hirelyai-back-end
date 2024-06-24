@@ -16,7 +16,7 @@ const GlobalErrorHandlingMiddleware = (
       });
       break;
 
-    case "UnauthorizedError":
+    case "Unauthenticated":
       console.log(error);
       res
         .status(401)
