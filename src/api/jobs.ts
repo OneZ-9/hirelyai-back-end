@@ -7,13 +7,15 @@ import {
   getJobById,
   updateJob,
 } from "../application/jobs";
+import AuthorizationMiddleware from "./middleware/authorization-middleware";
 
 const jobsRouter = express.Router();
 
 jobsRouter
   .route("/")
   .get(getAllJobs)
-  .post(ClerkExpressRequireAuth({}), createJob);
+  .post(ClerkExpressRequireAuth({}), AuthorizationMiddleware, createJob);
+
 jobsRouter
   .route("/:id")
   .get(ClerkExpressRequireAuth({}), getJobById)
